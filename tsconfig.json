@@ -5,16 +5,18 @@
     ],
     "module": "esnext",
     "target": "esnext",
-    "moduleResolution": "nodenext",
-    "strict": true,
+    "moduleResolution": "node",
+    //"strict": true,
     "downlevelIteration": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
     "jsx": "preserve",
-    "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "allowJs": true,
     "types": [
       "bun-types" // add Bun global
     ]
-  }
+  },
+  "exclude": ["node_modules"]
 }
