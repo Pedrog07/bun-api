@@ -1,5 +1,5 @@
 import { BunServer, Router } from '../../types'
-import { ErrorHandlerWrapper } from '../../utils'
+import { ErrorHandlerWrapper, AuthorizationWrapper } from '../../utils'
 import * as handlers from './user.handlers'
 
 const setUserRoutes = (app: BunServer) => {
@@ -11,13 +11,25 @@ const setUserRoutes = (app: BunServer) => {
 
   app.patch('/change-password', ErrorHandlerWrapper(handlers.changePasswordHandler))
 
-  usersRouter.get('', ErrorHandlerWrapper(handlers.getAllUsersHandler))
+  usersRouter.get(
+    '',
+    ErrorHandlerWrapper(AuthorizationWrapper(handlers.getAllUsersHandler))
+  )
 
-  usersRouter.get('/:id', ErrorHandlerWrapper(handlers.getUserHandler))
+  usersRouter.get(
+    '/:id',
+    ErrorHandlerWrapper(AuthorizationWrapper(handlers.getUserHandler))
+  )
 
-  usersRouter.patch('/:id', ErrorHandlerWrapper(handlers.updateUserHandler))
+  usersRouter.patch(
+    '/:id',
+    ErrorHandlerWrapper(AuthorizationWrapper(handlers.updateUserHandler))
+  )
 
-  usersRouter.delete('/:id', ErrorHandlerWrapper(handlers.deleteUserHandler))
+  usersRouter.delete(
+    '/:id',
+    ErrorHandlerWrapper(AuthorizationWrapper(handlers.deleteUserHandler))
+  )
 
   app.use('/users', usersRouter)
 }
