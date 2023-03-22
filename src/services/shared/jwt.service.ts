@@ -17,11 +17,11 @@ export class JwtService {
     })
   }
 
-  protected static authorize = (token: string) => {
-    if (!token) throw new CustomError('Must provide authorization token')
+  static authorize = (token: string) => {
+    if (!token) throw new CustomError('Must provide authorization token', 403)
     try {
       const result = jwt.verify(token, this.SECRET)
-      return result
+      return typeof result === 'string' ? result : (<{ sub: string }>result).sub
     } catch (error) {
       console.log(error)
     }

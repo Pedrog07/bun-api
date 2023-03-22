@@ -39,18 +39,27 @@ export default class UserService extends JwtService {
 
     const user = await this.getUser(email)
 
-    console.log(user)
-
     if (!user) throw new CustomError('Does not have access', 401)
 
     if (!bcrypt.compareSync(password, user.password))
       throw new CustomError('Invalid password', 400)
 
-    console.log('Logged!')
-
     const accessToken = this.signToken(user.id)
 
     return { accessToken }
+  }
+
+  static changePassword = async (email: string, newPassword: string) => {
+    if (!email || !newPassword) throw new CustomError('Missing information', 400)
+
+    const user = await this.getUser(email)
+
+    if (!user) throw new CustomError('Does not have access', 401)
+
+    user.password = newPassword
+    await this.repository.save(user)
+
+    return { message: 'Password changed successfully' }
   }
 
   private static getUser = async (email: string) =>
