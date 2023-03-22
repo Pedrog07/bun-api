@@ -1,4 +1,4 @@
-export const signupHandler = (req, res) => {
+export const signupHandler = async (req, res) => {
   res.status(200).json({ message: 'Signup' })
 }
 

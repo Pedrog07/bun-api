@@ -8,11 +8,11 @@ export class CustomError extends Error {
 }
 
 export const ErrorHandlerWrapper = (handler: Handler) => {
-  return (req: BunRequest, res: BunResponse) => {
+  return async (req: BunRequest, res: BunResponse) => {
     try {
-      handler(req, res)
+      await handler(req, res)
     } catch (error) {
-      res.status(error.statusCode).json({ message: error.message })
+      res.status(error.statusCode ?? 500).json({ message: error.message })
     }
   }
 }

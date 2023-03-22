@@ -11,6 +11,8 @@
     "skipLibCheck": true,
     "jsx": "preserve",
     "forceConsistentCasingInFileNames": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
     "allowJs": true,
     "types": [
       "bun-types" // add Bun global
