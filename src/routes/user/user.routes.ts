@@ -1,6 +1,6 @@
 import { BunServer, Router } from '../../types'
 import { ErrorHandlerWrapper } from '../../utils'
-import * as handlers from './users'
+import * as handlers from './user.handlers'
 
 const setUserRoutes = (app: BunServer) => {
   const usersRouter: Router = app.router()
