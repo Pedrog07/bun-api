@@ -7,7 +7,7 @@ import {
   BeforeInsert,
   BeforeUpdate,
 } from 'typeorm'
-//import * as bcrypt from 'bcrypt'
+import bcrypt from 'bcryptjs'
 
 @Entity({ name: 'users' })
 export class User {
@@ -61,10 +61,10 @@ export class User {
   })
   deletedAt: Date
 
-  // @BeforeInsert()
-  // @BeforeUpdate()
-  // async hashPassword() {
-  //   const salt = await bcrypt.genSalt()
-  //   this.password = await bcrypt.hash(this.password, salt)
-  // }
+  @BeforeInsert()
+  @BeforeUpdate()
+  async hashPassword() {
+    const salt = await bcrypt.genSalt()
+    this.password = await bcrypt.hash(this.password, salt)
+  }
 }
