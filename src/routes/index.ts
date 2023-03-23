@@ -1,8 +1,6 @@
-import setUserRoutes from './users'
-import { BunServer, Router } from '../types'
+import setUserRoutes from './user/user.routes'
+import { BunServer } from '../types'
 
-export const getRouter = (app: BunServer): Router => {
-  const router = app.router()
-  setUserRoutes(router)
-  return router
+export const buildRouter = (app: BunServer) => {
+  setUserRoutes(app)
 }

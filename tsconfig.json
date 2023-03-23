@@ -1,8 +1,6 @@
 {
   "compilerOptions": {
-    "lib": [
-      "ESNext"
-    ],
+    "lib": ["ESNext"],
     "module": "esnext",
     "target": "esnext",
     "moduleResolution": "node",
@@ -13,10 +11,13 @@
     "skipLibCheck": true,
     "jsx": "preserve",
     "forceConsistentCasingInFileNames": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
     "allowJs": true,
     "types": [
       "bun-types" // add Bun global
     ]
   },
+  "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]
 }
