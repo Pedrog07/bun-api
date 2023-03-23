@@ -18,9 +18,9 @@ export const loginHandler = async (req: BunRequest, res: BunResponse) => {
 }
 
 export const changePasswordHandler = async (req: BunRequest, res: BunResponse) => {
-  const { email, newPassword } = req.body || {}
+  const { email, oldPassword, newPassword } = req.body || {}
 
-  const result = await UserService.changePassword(email, newPassword)
+  const result = await UserService.changePassword(email, oldPassword, newPassword)
 
   res.status(200).json(result)
 }

@@ -21,8 +21,16 @@ export const ErrorHandlerWrapper = (handler: Handler) => {
 
 export const AuthorizationWrapper = (handler: HandlerWithSub) => {
   return async (req: BunRequest, res: BunResponse) => {
-    const sub = JwtService.authorize(req.headers?.authorization)
-    await handler(req, res, sub)
+    try {
+      const sub = JwtService.authorize(req.headers?.authorization)
+      await handler(req, res, sub)
+    } catch (error) {
+      console.log(
+        `Unable to complete request ${req.method} ${req.path}, reason: `,
+        error.message ?? error.name
+      )
+      throw error
+    }
   }
 }
 
