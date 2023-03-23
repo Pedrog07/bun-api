@@ -25,20 +25,17 @@ export const changePasswordHandler = async (req: BunRequest, res: BunResponse) =
   res.status(200).json(result)
 }
 
-export const getAllUsersHandler = async (
-  req: BunRequest,
-  res: BunResponse,
-  sub?: string
-) => {
-  res.status(200).json({ message: 'Get all users' })
+export const getAllUsersHandler = async (_: BunRequest, res: BunResponse) => {
+  const result = await UserService.getUsers()
+
+  res.status(200).json(result)
 }
 
-export const getUserHandler = async (
-  req: BunRequest,
-  res: BunResponse,
-  sub?: string
-) => {
-  res.status(200).json({ message: 'Get user' })
+export const getUserHandler = async (req: BunRequest, res: BunResponse) => {
+  const id = req.params?.id
+  const result = await UserService.getUserById(id)
+
+  res.status(200).json(result)
 }
 
 export const updateUserHandler = async (

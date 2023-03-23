@@ -11,12 +11,14 @@ const setUserRoutes = (app: BunServer) => {
 
   app.patch('/change-password', ErrorHandlerWrapper(handlers.changePasswordHandler))
 
-  usersRouter.get(
+  // should be a GET method but unfortunately Bunrest has an issue with it
+  usersRouter.post(
     '',
     ErrorHandlerWrapper(AuthorizationWrapper(handlers.getAllUsersHandler))
   )
 
-  usersRouter.get(
+  // should be a GET method but unfortunately Bunrest has an issue with it
+  usersRouter.post(
     '/:id',
     ErrorHandlerWrapper(AuthorizationWrapper(handlers.getUserHandler))
   )

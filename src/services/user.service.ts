@@ -38,6 +38,7 @@ export default class UserService extends JwtService {
     if (!email || !password) throw new CustomError('Missing information', 400)
 
     const user = await this.getUser(email)
+    console.log(user)
 
     if (!user) throw new CustomError('Does not have access', 401)
 
@@ -60,6 +61,40 @@ export default class UserService extends JwtService {
     await this.repository.save(user)
 
     return { message: 'Password changed successfully' }
+  }
+
+  static getUsers = async () => {
+    const users = await this.repository
+      .createQueryBuilder('user')
+      .select([
+        'user.id',
+        'user.email',
+        'user.username',
+        'user.country',
+        'user.coins',
+        'user.phone',
+      ])
+      .where('user.deletedAt IS NULL')
+      .getMany()
+
+    return { users }
+  }
+
+  static getUserById = async (id: string) => {
+    const user = await this.repository
+      .createQueryBuilder('user')
+      .select([
+        'user.id',
+        'user.email',
+        'user.username',
+        'user.country',
+        'user.coins',
+        'user.phone',
+      ])
+      .where('user.deletedAt IS NULL AND user.id = :id', { id })
+      .getOne()
+
+    return { user }
   }
 
   private static getUser = async (email: string) =>
