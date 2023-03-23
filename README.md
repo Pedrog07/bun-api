@@ -45,4 +45,14 @@ bun run sync
 - JWT_SECRET=
 - JWT_LIFETIME=
 
+## List of endpoints:
+
+- **POST** `/signup`: Sign up a new user
+- **POST** `/login`: Log in to get an access token
+- **PATCH** `/change-password`: Change user password
+- **POST** `/users`: Get all users
+- **POST** `/users/:id`: Get a single user
+- **PATCH** `/users/:id`: Update an user
+- **DELETE** `/users/:id`: Delete an user
+
 ! **NOTE**: the above variables should be included within a `.env` file at the root of the project
