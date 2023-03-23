@@ -15,119 +15,165 @@ export default class UserService extends JwtService {
     phone,
     privacyOptIn,
   }: User) => {
-    const user = await this.getUserByEmail(email)
-    if (user)
-      throw new CustomError('Oops seems like this email is already in use.', 400)
+    try {
+      const user = await this.getUserByEmail(email)
+      if (user)
+        throw new CustomError('Oops seems like this email is already in use.', 400)
 
-    if (!privacyOptIn) throw new CustomError('User must accept privacy opt in', 400)
+      if (!privacyOptIn)
+        throw new CustomError('User must accept privacy opt in', 400)
 
-    const newUser = new User()
-    newUser.email = email
-    newUser.password = password
-    newUser.username = username
-    newUser.country = country
-    newUser.phone = phone
-    newUser.privacyOptIn = privacyOptIn
+      const newUser = new User()
+      newUser.email = email
+      newUser.password = password
+      newUser.username = username
+      newUser.country = country
+      newUser.phone = phone
+      newUser.privacyOptIn = privacyOptIn
 
-    await this.repository.save(newUser)
+      await this.repository.save(newUser)
 
-    return { message: 'User successfully registered' }
+      return { message: 'User successfully registered' }
+    } catch (error) {
+      console.log('Signup error, reason: ', error.message)
+      throw error
+    }
   }
 
   static login = async (email: string, password: string) => {
-    if (!email || !password) throw new CustomError('Missing information', 400)
+    try {
+      if (!email || !password) throw new CustomError('Missing information', 400)
 
-    const user = await this.getUserByEmail(email)
+      const user = await this.getUserByEmail(email)
 
-    if (!user) throw new CustomError('Does not have access', 401)
+      if (!user) throw new CustomError('Does not have access', 401)
 
-    if (!bcrypt.compareSync(password, user.password))
-      throw new CustomError('Invalid password', 400)
+      if (!bcrypt.compareSync(password, user.password))
+        throw new CustomError('Invalid password', 400)
 
-    const accessToken = this.signToken(user.id)
+      const accessToken = this.signToken(user.id)
 
-    return { accessToken }
+      return { accessToken }
+    } catch (error) {
+      console.log('Login error, reason: ', error.message)
+      throw error
+    }
   }
 
-  static changePassword = async (email: string, newPassword: string) => {
-    if (!email || !newPassword) throw new CustomError('Missing information', 400)
+  static changePassword = async (
+    email: string,
+    oldPassword: string,
+    newPassword: string
+  ) => {
+    try {
+      if (!email || !oldPassword || !newPassword)
+        throw new CustomError('Missing information', 400)
 
-    const user = await this.getUserByEmail(email)
+      const user = await this.getUserByEmail(email)
 
-    if (!user) throw new CustomError('Does not have access', 401)
+      if (!user) throw new CustomError('Does not have access', 401)
 
-    user.password = newPassword
-    await this.repository.save(user)
+      if (!bcrypt.compareSync(oldPassword, user.password))
+        throw new CustomError('Invalid old password', 400)
 
-    return { message: 'Password changed successfully' }
+      user.password = newPassword
+      await this.repository.save(user)
+
+      return { message: 'Password changed successfully' }
+    } catch (error) {
+      console.log('Change password error, reason: ', error.message)
+      throw error
+    }
   }
 
   static getUsers = async () => {
-    const users = await this.repository
-      .createQueryBuilder('user')
-      .select([
-        'user.id',
-        'user.email',
-        'user.username',
-        'user.country',
-        'user.coins',
-        'user.phone',
-      ])
-      .where('user.deletedAt IS NULL')
-      .getMany()
+    try {
+      const users = await this.repository
+        .createQueryBuilder('user')
+        .select([
+          'user.id',
+          'user.email',
+          'user.username',
+          'user.country',
+          'user.coins',
+          'user.phone',
+        ])
+        .where('user.deletedAt IS NULL')
+        .getMany()
 
-    return { users }
+      return { users }
+    } catch (error) {
+      console.log('Get all users error, reason: ', error.message)
+      throw error
+    }
   }
 
   static updateUser = async (
     id: string,
-    { username, country, phone }: Partial<User>
+    { username, country, phone, coins }: Partial<User>
   ) => {
-    const { user } = await this.getUserById(id)
+    try {
+      const { user } = await this.getUserById(id)
 
-    if (!user) throw new CustomError('User not found', 404)
+      if (!user) throw new CustomError('User not found', 404)
 
-    await this.repository
-      .createQueryBuilder()
-      .update(User)
-      .set(
-        cleanObject({
-          username,
-          country,
-          phone,
-        })
-      )
-      .where('id = :id', { id })
-      .execute()
+      //const
+      await this.repository
+        .createQueryBuilder()
+        .update(User)
+        .set(
+          cleanObject({
+            username,
+            country,
+            phone,
+            coins,
+          })
+        )
+        .where('id = :id', { id })
+        .execute()
 
-    return { message: 'User successfully updated' }
+      return { message: 'User successfully updated' }
+    } catch (error) {
+      console.log('Update user error, reason: ', error.message)
+      throw error
+    }
   }
 
   static deleteUser = async (id: string) => {
-    const { user } = await this.getUserById(id)
+    try {
+      const { user } = await this.getUserById(id)
 
-    if (!user) throw new CustomError('User not found', 404)
+      if (!user) throw new CustomError('User not found', 404)
 
-    await this.repository.softDelete(id)
+      await this.repository.softDelete(id)
 
-    return { message: 'User successfully deleted' }
+      return { message: 'User successfully deleted' }
+    } catch (error) {
+      console.log('Delete user error, reason: ', error.message)
+      throw error
+    }
   }
 
   static getUserById = async (id: string) => {
-    const user = await this.repository
-      .createQueryBuilder('user')
-      .select([
-        'user.id',
-        'user.email',
-        'user.username',
-        'user.country',
-        'user.coins',
-        'user.phone',
-      ])
-      .where('user.deletedAt IS NULL AND user.id = :id', { id })
-      .getOne()
+    try {
+      const user = await this.repository
+        .createQueryBuilder('user')
+        .select([
+          'user.id',
+          'user.email',
+          'user.username',
+          'user.country',
+          'user.coins',
+          'user.phone',
+        ])
+        .where('user.deletedAt IS NULL AND user.id = :id', { id })
+        .getOne()
 
-    return { user }
+      return { user }
+    } catch (error) {
+      console.log('Get user by id error, reason: ', error.message)
+      throw error
+    }
   }
 
   private static getUserByEmail = async (email: string) =>
