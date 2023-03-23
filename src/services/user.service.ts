@@ -117,7 +117,6 @@ export default class UserService extends JwtService {
 
       if (!user) throw new CustomError('User not found', 404)
 
-      //const
       await this.repository
         .createQueryBuilder()
         .update(User)
