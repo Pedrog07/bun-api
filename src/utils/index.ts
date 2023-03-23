@@ -21,8 +21,15 @@ export const ErrorHandlerWrapper = (handler: Handler) => {
 
 export const AuthorizationWrapper = (handler: HandlerWithSub) => {
   return async (req: BunRequest, res: BunResponse) => {
-    console.log(req.headers)
     const sub = JwtService.authorize(req.headers?.authorization)
     await handler(req, res, sub)
   }
+}
+
+export const cleanObject = (obj: any) => {
+  for (let field in obj) {
+    if (obj[field] === undefined || typeof obj[field] === 'undefined')
+      delete obj[field]
+  }
+  return obj
 }

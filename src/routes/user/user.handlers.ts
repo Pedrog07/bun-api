@@ -38,18 +38,18 @@ export const getUserHandler = async (req: BunRequest, res: BunResponse) => {
   res.status(200).json(result)
 }
 
-export const updateUserHandler = async (
-  req: BunRequest,
-  res: BunResponse,
-  sub?: string
-) => {
-  res.status(200).json({ message: 'Update user' })
+export const updateUserHandler = async (req: BunRequest, res: BunResponse) => {
+  const id = req.params?.id
+  const data = req.body || {}
+
+  const result = await UserService.updateUser(id, <Partial<User>>data)
+
+  res.status(200).json(result)
 }
 
-export const deleteUserHandler = async (
-  req: BunRequest,
-  res: BunResponse,
-  sub?: string
-) => {
-  res.status(200).json({ message: 'Delete user' })
+export const deleteUserHandler = async (req: BunRequest, res: BunResponse) => {
+  const id = req.params?.id
+  const result = await UserService.deleteUser(id)
+
+  res.status(200).json(result)
 }

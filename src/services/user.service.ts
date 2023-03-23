@@ -1,6 +1,6 @@
 import { User } from '../entities'
 import { dataSource } from '../config'
-import { CustomError } from '../utils'
+import { cleanObject, CustomError } from '../utils'
 import { JwtService } from './shared/jwt.service'
 import bcrypt from 'bcryptjs'
 
@@ -15,7 +15,7 @@ export default class UserService extends JwtService {
     phone,
     privacyOptIn,
   }: User) => {
-    const user = await this.getUser(email)
+    const user = await this.getUserByEmail(email)
     if (user)
       throw new CustomError('Oops seems like this email is already in use.', 400)
 
@@ -37,8 +37,7 @@ export default class UserService extends JwtService {
   static login = async (email: string, password: string) => {
     if (!email || !password) throw new CustomError('Missing information', 400)
 
-    const user = await this.getUser(email)
-    console.log(user)
+    const user = await this.getUserByEmail(email)
 
     if (!user) throw new CustomError('Does not have access', 401)
 
@@ -53,7 +52,7 @@ export default class UserService extends JwtService {
   static changePassword = async (email: string, newPassword: string) => {
     if (!email || !newPassword) throw new CustomError('Missing information', 400)
 
-    const user = await this.getUser(email)
+    const user = await this.getUserByEmail(email)
 
     if (!user) throw new CustomError('Does not have access', 401)
 
@@ -80,6 +79,40 @@ export default class UserService extends JwtService {
     return { users }
   }
 
+  static updateUser = async (
+    id: string,
+    { username, country, phone }: Partial<User>
+  ) => {
+    const { user } = await this.getUserById(id)
+
+    if (!user) throw new CustomError('User not found', 404)
+
+    await this.repository
+      .createQueryBuilder()
+      .update(User)
+      .set(
+        cleanObject({
+          username,
+          country,
+          phone,
+        })
+      )
+      .where('id = :id', { id })
+      .execute()
+
+    return { message: 'User successfully updated' }
+  }
+
+  static deleteUser = async (id: string) => {
+    const { user } = await this.getUserById(id)
+
+    if (!user) throw new CustomError('User not found', 404)
+
+    await this.repository.softDelete(id)
+
+    return { message: 'User successfully deleted' }
+  }
+
   static getUserById = async (id: string) => {
     const user = await this.repository
       .createQueryBuilder('user')
@@ -97,6 +130,6 @@ export default class UserService extends JwtService {
     return { user }
   }
 
-  private static getUser = async (email: string) =>
+  private static getUserByEmail = async (email: string) =>
     await this.repository.findOne({ where: { email } })
 }
