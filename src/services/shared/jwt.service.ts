@@ -23,7 +23,10 @@ export class JwtService {
       const result = jwt.verify(token, this.SECRET)
       return typeof result === 'string' ? result : (<{ sub: string }>result).sub
     } catch (error) {
-      console.log(error)
+      if (error.name === 'TokenExpiredError')
+        throw new CustomError('Token expired', 401)
+
+      throw error
     }
   }
 }
