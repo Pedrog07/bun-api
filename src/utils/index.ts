@@ -10,9 +10,9 @@ export class CustomError extends Error {
 }
 
 export const ErrorHandlerWrapper = (handler: Handler) => {
-  return async (req: BunRequest, res: BunResponse) => {
+  return async (req: BunRequest, res: BunResponse, next?: (error: Error) => {}) => {
     try {
-      await handler(req, res)
+      await handler(req, res, next)
     } catch (error) {
       res.status(error.statusCode ?? 500).json({ message: error.message })
     }

@@ -1,6 +1,8 @@
 import server from 'bunrest'
 import { buildRouter } from './src/routes'
 import { initializeDatabase } from './src/config'
+import { languages } from './src/utils/constants'
+import { CustomError, ErrorHandlerWrapper } from './src/utils'
 
 const bootstrap = async () => {
   const app = server()
@@ -14,17 +16,29 @@ const bootstrap = async () => {
   })
 
   // Middleware to get/set language headers
-  app.use((req, res, next) => {
-    const language = req.headers?.['accept-language']
-    if (language) {
-      res.setHeader('Content-Language', language)
-    }
-    next && next()
-  })
+  app.use(
+    ErrorHandlerWrapper((req, res, next) => {
+      const language = req.headers?.['accept-language']
+      if (language) {
+        if (!['en', 'es'].includes(language.toLowerCase()))
+          throw new CustomError('Language not supported', 406)
+        res.setHeader('Content-Language', language.toLowerCase())
+      }
+      next && next()
+    })
+  )
 
   app.get('/check-health', async (req, res) => {
     const message = 'Api Up!'
-    res.status(200).json({ message, param: req.params?.id })
+    res.status(200).json({ message })
+  })
+
+  app.get('/translate-mock', async (req, res) => {
+    const lang = res.getHeader()?.['Content-Language']
+
+    res
+      .status(200)
+      .json({ message: languages[lang ?? 'en']?.message ?? languages.en.message })
   })
 
   await initializeDatabase()
