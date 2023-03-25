@@ -13,8 +13,18 @@ const bootstrap = async () => {
     res.status(404).json({ message: err?.message || 'Route not found' })
   })
 
-  app.get('/check-health', (req, res) => {
-    res.status(200).json({ message: 'Api up!', param: req.params?.id })
+  // Middleware to get/set language headers
+  app.use((req, res, next) => {
+    const language = req.headers?.['accept-language']
+    if (language) {
+      res.setHeader('Content-Language', language)
+    }
+    next && next()
+  })
+
+  app.get('/check-health', async (req, res) => {
+    const message = 'Api Up!'
+    res.status(200).json({ message, param: req.params?.id })
   })
 
   await initializeDatabase()
