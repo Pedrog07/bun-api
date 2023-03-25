@@ -1,39 +1,33 @@
-import { BunServer, Router } from '../../types'
+import { BunServer } from '../../types'
 import { ErrorHandlerWrapper, AuthorizationWrapper } from '../../utils'
 import * as handlers from './user.handlers'
 
 const setUserRoutes = (app: BunServer) => {
-  const usersRouter: Router = app.router()
-
   app.post('/signup', ErrorHandlerWrapper(handlers.signupHandler))
 
   app.post('/login', ErrorHandlerWrapper(handlers.loginHandler))
 
   app.patch('/change-password', ErrorHandlerWrapper(handlers.changePasswordHandler))
 
-  // should be a GET method but unfortunately Bunrest has an issue with it
-  usersRouter.post(
-    '',
+  app.get(
+    '/users',
     ErrorHandlerWrapper(AuthorizationWrapper(handlers.getAllUsersHandler))
   )
 
-  // should be a GET method but unfortunately Bunrest has an issue with it
-  usersRouter.post(
-    '/:id',
+  app.get(
+    '/users/:id',
     ErrorHandlerWrapper(AuthorizationWrapper(handlers.getUserHandler))
   )
 
-  usersRouter.patch(
-    '/:id',
+  app.patch(
+    '/users/:id',
     ErrorHandlerWrapper(AuthorizationWrapper(handlers.updateUserHandler))
   )
 
-  usersRouter.delete(
-    '/:id',
+  app.delete(
+    '/users/:id',
     ErrorHandlerWrapper(AuthorizationWrapper(handlers.deleteUserHandler))
   )
-
-  app.use('/users', usersRouter)
 }
 
 export default setUserRoutes
